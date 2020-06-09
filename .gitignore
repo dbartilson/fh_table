@@ -1,0 +1,7 @@
+*.exe
+*.mod
+*.obj
+*.o
+*.layout
+*.out
+*.depend
