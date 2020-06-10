@@ -1,4 +1,6 @@
+!==========================================================
 module hash_functions
+!==========================================================
 
 !==========================================================
 ! Private variables and procedures
@@ -387,7 +389,6 @@ end function
 !==========================================================
 pure function sdbm_64_str(key) result(hash)
 !==========================================================
-   ! attributable to Dan Bernstein
    !     (http://www.cse.yorku.ca/~oz/hash.html)
    character(*), intent(in) :: key
    integer                  :: hash, i, klen
@@ -464,7 +465,7 @@ end function
 !==========================================================
 pure function fnv1a_64_str(key) result(hash)
 !==========================================================
-   ! Fowler/Noll/Vo
+   ! Fowler/Noll/Vo variation
    !     (http://www.isthe.com/chongo/tech/comp/fnv/index.html#FNV-1)
    character(*), intent(in)  :: key
    integer                   :: hash, i, klen
@@ -482,4 +483,6 @@ pure function fnv1a_64_str(key) result(hash)
 end function
 !==========================================================
 
+!==========================================================
 end module
+!==========================================================

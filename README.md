@@ -3,11 +3,10 @@
 The main features of `fh_table` are:
 
 - Open-addressed, linear-probed hash table.
-- Tables may use integer or variable-length string keys with values stored as integers. 
-- Integer/string key tables are defined as separate types, requiring no preprocessor steps.
-- Simple removal (tombstoning) or shift removal are available methods and accessible by procedure pointers.
-- Implementation of a variety of hash functions in a separate module file, including [MurmurHash3](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp), [MurmurHash2](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash2.cpp), [djb2/a](http://www.cse.yorku.ca/~oz/hash.html), [sdbm](http://www.cse.yorku.ca/~oz/hash.html), and [fnv1/a](http://www.isthe.com/chongo/tech/comp/fnv/index.html#FNV-1). 
-- Hash functions are written separately for integers and strings, avoiding the relatively-costly transfer intrinsic for integers.
+- Two hash table 'types' are available, one with integer keys and one with variable-length string keys. Both use integer values paired to the key. 
+- Preprocessing is not necessary.
+- Implementation of a variety of hash functions in a separate module file, including [MurmurHash3](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp), [MurmurHash2](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash2.cpp), [djb2/a](http://www.cse.yorku.ca/~oz/hash.html), [sdbm](http://www.cse.yorku.ca/~oz/hash.html), and [FNV-1/a](http://www.isthe.com/chongo/tech/comp/fnv/index.html#FNV-1). 
+- Procedure pointers are used to allow the hash table to use different hash functions and key/value removal methods.
 
 **License:** MIT
 
@@ -23,7 +22,7 @@ program hash_test
   character(5) :: key_string
   integer      :: key_int, val_int
 
-  key_string = `hello`
+  key_string = 'hello'
   key_int    = 42
   val_int = mmh3_64(key_string);    write(*,*) val_int
   val_int = mmh2_64(key_int);       write(*,*) val_int
@@ -47,24 +46,22 @@ program ht_test
   val_int    = 2
   table_size = 10
 
-  call table_int%init(table_size,flag,alg=`mmh3 `, &
-                      load_factor=0.85)         ! init
-  table_int%remove => trem_simple_int           ! redefine deletion method
-  call table_int%insert(key_int,val_int,flag)   ! insert key/val
-  call table_int%set(key_int,key_int,flag)      ! overwrite val
-  call table_int%resize(2*table_size,flag)      ! resize table
-  call table_int%get(key_int,i,flag)            ! get val
-  call table_int%remove(key_int,flag)           ! remove key/val
-  call table_int%destruct(flag)                 ! destroy table
-
+  call table_int%init(table_size,flag,alg='mmh3 ',load_factor=0.85)  ! init
+  table_int%remove => trem_simple_int                                ! redefine deletion method
+  call table_int%insert(key_int,val_int,flag)                        ! insert key/val
+  call table_int%set(key_int,key_int,flag)                           ! overwrite val
+  call table_int%resize(2*table_size,flag)                           ! resize table
+  call table_int%get(key_int,i,flag)                                 ! get val
+  call table_int%remove(key_int,flag)                                ! remove key/val
+  call table_int%destruct(flag)                                      ! destroy table
 end program
 ````
 
 ## Notes 
 
 - `fh_table` requires a Fortran 2008 compiler and has been tested with gfortran 8.1.0. `implicit none` and default 8-byte real/integers are assumed to be baked in during compilation. 
-- Storing string keys is slower than storing integer keys because (1) the hash functions are faster for integers (see the `hash_function_test` exe) and (2) integer keys are stored in an aligned fashion and require no reallocations, while storing variable-length strings will result in misalignment and will default to reallocation on assignment.
-- While hash tables and hash functions are available for integer and variable-length string types, hash tables only use integers for the value of the key/value pair. This was done for simplicity. If you need to reference a string (or other type) value, I recommend storing that in a separate array and using the 'value' of the hash table to store the corresponding index.
+- Storing string keys is slower than storing integer keys because (1) the hash functions are faster for integers (see the `hash_function_test` exe) and (2) integer keys are stored in an aligned fashion and require no reallocations, while storing variable-length strings will typically result in misalignment and will default to reallocation on assignment.
+- While hash tables and hash functions are available for integer and variable-length string key types, the included hash tables only use integers for the value of the key/value pair. This was done for simplicity. If you need to reference a string (or other type) value, I recommend storing that in a separate array and using the 'value' of the hash table to store the corresponding index.
 
 ## References and Related
 

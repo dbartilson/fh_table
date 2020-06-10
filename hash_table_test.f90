@@ -137,11 +137,10 @@ program hash_table_test
 
    do i = 1,n
       b = i
-      do j = 1,slen        ! Do j=1,slen Euclidean divisions
-         a = b/base        ! integer division, get seed for next digit
-         r = b - a*base    ! get remainder for current digit
-         b = a             ! set b = a to start on next digit
-         strn(j) = r + 1   ! Fortran is indexed to 1, modulo is indexed to 0
+      do j = 1,slen                ! Do j=1,slen Euclidean divisions
+         a = b/base                ! integer division, get seed for next digit
+         strn(j)  = b - a*base +1  ! Fortran is indexed to 1, modulo is indexed to 0
+         b = a                     ! set b = a to start on next digit
       end do
 
       do j = 1,slen        ! Convert from index to ASCII code to character

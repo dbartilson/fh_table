@@ -6,16 +6,17 @@ program hash_function_test
    !============================================================================
    use hash_functions
 
-   real           :: t1, t2, tsum, r1
+   integer, parameter :: slen = 10 ! number of string bytes
+   real           :: t1, t2, tsum
    character(6)   :: name
-   character(8)   :: str
+   character(slen):: str
    integer        :: ierror, key
-   integer        :: i, j, ncol, k, strn(8)
+   integer        :: i, j, ncol, k, strn(slen), base, a, b
    integer        :: tbl_size, nhash
 
    integer, dimension(27) :: asciis
    integer, dimension(:), allocatable :: keys, hash
-   character(8), dimension(:), allocatable :: keys_s
+   character(slen), dimension(:), allocatable :: keys_s
 
    procedure(sdbm_64_int),    pointer :: fhash_i => null()
    procedure(sdbm_64_str),    pointer :: fhash_s => null()
@@ -25,7 +26,7 @@ program hash_function_test
    !============================================================================
 
    nhash    = 5000000
-   tbl_size = int(nhash/0.7+1)
+   tbl_size = int(nhash/0.7)+1
 
    allocate(keys(nhash),hash(nhash),STAT=ierror)
    if(ierror /= 0) write(*,"('Mem alloc error')")
@@ -59,7 +60,7 @@ program hash_function_test
    !============================================================================
 
    nhash = 50000
-   tbl_size = int(nhash/0.7+1)
+   tbl_size = int(nhash/0.7)+1
 
    write(*,"(/)")
    write(*,"('Hash collision test: ',i12,' integers modulo ',i12)") nhash, tbl_size
@@ -99,30 +100,37 @@ program hash_function_test
    !============================================================================
 
    nhash    = 5000000
-   tbl_size = int(nhash/0.7+1)
+   tbl_size = int(nhash/0.7)+1
 
    write(*,"(/)")
-   write(*,"('Hash speed test: ',i12,' 8-byte strings')") nhash
+   write(*,"('Hash speed test: ',i12,' ',i2,'-byte strings')") nhash, slen
 
    deallocate(keys,hash)
    allocate(keys_s(nhash),hash(nhash),STAT=ierror)
    if(ierror /= 0) write(*,"('Mem alloc error')")
 
+   ! Use base conversion to make nhash strings which utilize character indices
+   ! 1 through 'base' from among ASCII 32 & 97-122 (space + lower case letters)
+   ! e.g. base 5 would use space + a,b,c,d to make strings '   ' through 'ddd'
    asciis(1) = 32
    asciis(2:27) = [(i,i=97,122)]
 
+   base = 7 ! number of ascii characters to use/base to convert to
+
    do i = 1,nhash
-      do j = 1,8
-         call random_number(r1)
-         strn(j) = int(r1*27)+1
+      b = i
+      do j = 1,slen                ! Do j=1,slen Euclidean divisions
+         a = b/base                ! integer division, get seed for next digit
+         strn(j)  = b - a*base +1  ! Fortran is indexed to 1, modulo is indexed to 0
+         b = a                     ! set b = a to start on next digit
       end do
 
-      do j = 1,8
+      do j = 1,slen        ! Convert from index to ASCII code to character
          str(j:j) = achar(asciis(strn(j)))
       end do
+
       keys_s(i) = str
-!      write(*,"(a)") str
-!      write(*,"(8(i4))") n
+
    end do
 
    do k = 1,7
@@ -152,10 +160,10 @@ program hash_function_test
    !============================================================================
 
    nhash = 50000
-   tbl_size = int(nhash/0.7+1)
+   tbl_size = int(nhash/0.7)+1
 
    write(*,"(/)")
-   write(*,"('Hash collision test: ',i12,' 8-byte strings modulo ',i12)") nhash, tbl_size
+   write(*,"('Hash collision test: ',i12,' ',i2,'-byte strings')") nhash, slen
    do k = 1,7
       select case(k)
       case(1); fhash_s => djb2_64_str;    name = 'djb2  '

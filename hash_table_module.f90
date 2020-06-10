@@ -1,4 +1,6 @@
+!==========================================================
 module hash_table_module
+!==========================================================
 
 use hash_functions
 
@@ -185,7 +187,7 @@ end subroutine
 subroutine tdestruct_str(ht,flag)
 !==========================================================
    class(ht_str), intent(inout)  :: ht
-   integer,     intent(out)      :: flag
+   integer,       intent(out)    :: flag
 
    deallocate(ht%key,ht%val,STAT=flag)
    ht%dim      = 0
@@ -271,8 +273,8 @@ end subroutine
 recursive subroutine tinsert_int(ht,key,val,flag)
 !==========================================================
    class(ht_int), intent(inout) :: ht
-   integer,     intent(in)      :: key, val
-   integer,     intent(out)     :: flag
+   integer,       intent(in)    :: key, val
+   integer,       intent(out)   :: flag
    integer                      :: i, j, dist
 
    flag = -1
@@ -406,7 +408,7 @@ end subroutine
 pure subroutine tset_str(ht,key,val,flag)
 !==========================================================
    class(ht_str), intent(inout) :: ht
-   character(*),   intent(in)   :: key
+   character(*),  intent(in)    :: key
    integer,       intent(in)    :: val
    integer,       intent(out)   :: flag
    integer                      :: i
