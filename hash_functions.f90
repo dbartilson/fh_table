@@ -106,8 +106,7 @@ pure function mmh3_64_str(key) result(hash)
    if(tlen > 0) then
       if(tlen > 8) then
          do i = tlen,9,-1
-            ki = transfer(key(nblocks*16+i:nblocks*16+i),ki)
-            ki8 = ki
+            ki8 = transfer(key(nblocks*16+i:nblocks*16+i),ki)
             k2 = ieor(k2,shiftl(ki8,shifts(i)))
          end do
          k2 = k2 * c2
@@ -118,8 +117,7 @@ pure function mmh3_64_str(key) result(hash)
       end if
 
       do i = tlen,1,-1
-         ki = transfer(key(nblocks*16+i:nblocks*16+i),ki)
-         ki8 = ki
+         ki8 = transfer(key(nblocks*16+i:nblocks*16+i),ki)
          k1 = ieor(k1,shiftl(ki8,shifts(i)))
       end do
       k1 = k1 * c1
@@ -251,8 +249,7 @@ pure function mmh2_64_str(key) result(hash)
    tlen = modulo(klen,8)
    if(tlen > 0) then
       do i = tlen,1,-1
-         ki = transfer(key(nblocks*8+i:nblocks*8+i),ki)
-         k = ki
+         k = transfer(key(nblocks*8+i:nblocks*8+i),ki)
          h = ieor(h,shiftl(k,shifts(i)))
       end do
       h = h*m
@@ -302,12 +299,12 @@ pure function djb2_64_int(key) result(hash)
    ! attributable to Dan Bernstein
    !     (http://www.cse.yorku.ca/~oz/hash.html)
    integer, intent(in) :: key
-   integer             :: hash, i, split
+   integer             :: hash, i, ki
 
    hash = djb2_init
    do i = 1,8
-      split = ibits(key,8*(i-1)+1,8)
-      hash = (hash * 33) + split
+      ki = ibits(key,8*(i-1),8)
+      hash = (hash * 33) + ki
    end do
 
 end function
@@ -319,15 +316,15 @@ pure function djb2_64_str(key) result(hash)
    ! attributable to Dan Bernstein
    !     (http://www.cse.yorku.ca/~oz/hash.html)
    character(*), intent(in) :: key
-   integer                  :: hash, i, klen
+   integer                  :: hash, i, klen, ki
    integer(1)               :: split
 
    klen = len_trim(key)
 
    hash = djb2_init
    do i = 1,klen
-      split = transfer(key(i:i),split)
-      hash = (hash * 33) + split
+      ki = transfer(key(i:i),split)
+      hash = (hash * 33) + ki
    end do
 
 end function
@@ -339,12 +336,12 @@ pure function djb2a_64_int(key) result(hash)
    ! attributable to Dan Bernstein
    !     (http://www.cse.yorku.ca/~oz/hash.html)
    integer, intent(in) :: key
-   integer             :: hash, i, split
+   integer             :: hash, i, ki
 
    hash = djb2_init
    do i = 1,8
-      split = ibits(key,8*(i-1)+1,8)
-      hash = ieor(33*hash,split)
+      ki = ibits(key,8*(i-1),8)
+      hash = ieor(33*hash,ki)
    end do
 
 end function
@@ -356,15 +353,15 @@ pure function djb2a_64_str(key) result(hash)
    ! attributable to Dan Bernstein
    !     (http://www.cse.yorku.ca/~oz/hash.html)
    character(*), intent(in) :: key
-   integer                  :: hash, i, klen
+   integer                  :: hash, i, klen, ki
    integer(1)               :: split
 
    klen = len_trim(key)
 
    hash = djb2_init
    do i = 1,klen
-      split = transfer(key(i:i),split)
-      hash = ieor(33*hash,split)
+      ki = transfer(key(i:i),split)
+      hash = ieor(33*hash,ki)
    end do
 
 end function
@@ -375,12 +372,12 @@ pure function sdbm_64_int(key) result(hash)
 !==========================================================
    !     (http://www.cse.yorku.ca/~oz/hash.html)
    integer, intent(in) :: key
-   integer             :: hash, i, split
+   integer             :: hash, i, ki
 
    hash = 0
    do i = 1,8
-      split = ibits(key,8*(i-1)+1,8)
-      hash = hash * 65599 + split
+      ki = ibits(key,8*(i-1),8)
+      hash = hash * 65599 + ki
    end do
 
 end function
@@ -391,15 +388,15 @@ pure function sdbm_64_str(key) result(hash)
 !==========================================================
    !     (http://www.cse.yorku.ca/~oz/hash.html)
    character(*), intent(in) :: key
-   integer                  :: hash, i, klen
+   integer                  :: hash, i, klen, ki
    integer(1)               :: split
 
    klen = len_trim(key)
 
    hash = 0
    do i = 1,klen
-      split = transfer(key(i:i),split)
-      hash = hash * 65599 + split
+      ki = transfer(key(i:i),split)
+      hash = hash * 65599 + ki
    end do
 
 end function
@@ -411,13 +408,13 @@ pure function fnv1_64_int(key) result(hash)
    ! Fowler/Noll/Vo
    !     (http://www.isthe.com/chongo/tech/comp/fnv/index.html#FNV-1)
    integer, intent(in)  :: key
-   integer              :: hash, i, split
+   integer              :: hash, i, ki
 
    hash = fnv_offset
    do i = 1,8
       hash = hash * fnv_prime
-      split = ibits(key,8*(i-1)+1,8)
-      hash = ieor(hash,split)
+      ki = ibits(key,8*(i-1),8)
+      hash = ieor(hash,ki)
    end do
 
 end function
@@ -429,7 +426,7 @@ pure function fnv1_64_str(key) result(hash)
    ! Fowler/Noll/Vo
    !     (http://www.isthe.com/chongo/tech/comp/fnv/index.html#FNV-1)
    character(*), intent(in)  :: key
-   integer                   :: hash, i, klen
+   integer                   :: hash, i, klen, ki
    integer(1)                :: split
 
    klen = len_trim(key)
@@ -437,8 +434,8 @@ pure function fnv1_64_str(key) result(hash)
    hash = fnv_offset
    do i = 1,klen
       hash = hash * fnv_prime
-      split = transfer(key(i:i),split)
-      hash = ieor(hash,split)
+      ki = transfer(key(i:i),split)
+      hash = ieor(hash,ki)
    end do
 
 end function
@@ -450,12 +447,12 @@ pure function fnv1a_64_int(key) result(hash)
    ! Fowler/Noll/Vo variation
    !     (http://www.isthe.com/chongo/tech/comp/fnv/index.html#FNV-1a)
    integer, intent(in) :: key
-   integer             :: hash, i, split
+   integer             :: hash, i, ki, h, h1
 
    hash = fnv_offset
    do i = 1,8
-      split = ibits(key,8*(i-1)+1,8)
-      hash = ieor(hash,split)
+      ki = ibits(key,8*(i-1),8)
+      hash = ieor(hash,ki)
       hash = hash * fnv_prime
    end do
 
@@ -468,15 +465,15 @@ pure function fnv1a_64_str(key) result(hash)
    ! Fowler/Noll/Vo variation
    !     (http://www.isthe.com/chongo/tech/comp/fnv/index.html#FNV-1)
    character(*), intent(in)  :: key
-   integer                   :: hash, i, klen
+   integer                   :: hash, i, klen, ki
    integer(1)                :: split
 
    klen = len_trim(key)
 
    hash = fnv_offset
    do i = 1,klen
-      split = transfer(key(i:i),split)
-      hash = ieor(hash,split)
+      ki = transfer(key(i:i),split)
+      hash = ieor(hash,ki)
       hash = hash * fnv_prime
    end do
 

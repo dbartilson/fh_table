@@ -25,7 +25,7 @@ program hash_function_test
    ! Hash speed test: Integers
    !============================================================================
 
-   nhash    = 5000000
+   nhash    = 50000000
    tbl_size = int(nhash/0.7)+1
 
    allocate(keys(nhash),hash(nhash),STAT=ierror)
@@ -76,7 +76,7 @@ program hash_function_test
       end select
 
       do i = 1,nhash
-         key = fhash_i(i*10)
+         key = fhash_i(i)
          hash(i) = modulo(key,tbl_size)+1 ! Pretend as if it is fitting into a table
       end do
 
@@ -99,7 +99,7 @@ program hash_function_test
    ! Hash speed test: Strings
    !============================================================================
 
-   nhash    = 5000000
+   nhash    = 50000000
    tbl_size = int(nhash/0.7)+1
 
    write(*,"(/)")
@@ -163,7 +163,7 @@ program hash_function_test
    tbl_size = int(nhash/0.7)+1
 
    write(*,"(/)")
-   write(*,"('Hash collision test: ',i12,' ',i2,'-byte strings')") nhash, slen
+   write(*,"('Hash collision test: ',i12,' ',i2,'-byte strings modulo ',i12)") nhash, slen, tbl_size
    do k = 1,7
       select case(k)
       case(1); fhash_s => djb2_64_str;    name = 'djb2  '

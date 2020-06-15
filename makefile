@@ -6,7 +6,7 @@ SRCS = hash_functions.f90 \
 OBJS = $(SRCS:.f90=.o)
 
 FC     = gfortran
-FFLAGS = -fimplicit-none -fdefault-integer-8 -fdefault-real-8 -O3
+FFLAGS = -fimplicit-none -fdefault-integer-8 -fdefault-real-8 -O1
 EXES   = hash_function_test hash_table_test
 
 default : $(EXES)
@@ -20,8 +20,8 @@ $(EXES) : % : %.o
 	$(FC) $(FFLAGS) -o $@ $^
 
 clean:
-#	rm -rf $(OBJS) $(EXES:=.exe) *.mod
-	del $(OBJS) $(EXES:=.exe) *.mod
+	rm -rf $(OBJS) $(EXES:=.exe) *.mod
+#	del $(OBJS) $(EXES:=.exe) *.mod
 
 .PHONY: default clean
 
