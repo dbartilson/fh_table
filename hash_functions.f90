@@ -447,7 +447,7 @@ pure function fnv1a_64_int(key) result(hash)
    ! Fowler/Noll/Vo variation
    !     (http://www.isthe.com/chongo/tech/comp/fnv/index.html#FNV-1a)
    integer, intent(in) :: key
-   integer             :: hash, i, ki, h, h1
+   integer             :: hash, i, ki
 
    hash = fnv_offset
    do i = 1,8
