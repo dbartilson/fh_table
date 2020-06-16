@@ -540,7 +540,7 @@ pure subroutine trem_shift_str(ht,key,flag)
    j = i ! Start at element to be deleted (TBD)
    do l = 1,ht%dim ! Avoid inf loop for full table
       j = modulo(j,ht%dim) + 1 ! Look at next entry
-      if(ht%key(j)%string(1:1) == ht%empty) then
+      if(ht%key(j)%string(1:1) /= ht%empty) then
          k = modulo(ht%fhash(ht%key(j)%string),ht%dim) + 1 ! Get desired position for entry j
          ! If desired position leq to TBD
          if((j > i .and. (k <= i .or.  k > j)) .or. &

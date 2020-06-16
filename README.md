@@ -19,18 +19,14 @@ The hash functions are available in a module file `hash_functions`, which may be
 ````Fortran
 program hash_test
   use hash_functions
-  character(5) :: key_string
-  integer      :: key_int, val_int
 
-  key_string = 'hello'
-  key_int    = 42
-  val_int = mmh3_64(key_string);    write(*,*) val_int
-  val_int = mmh2_64(key_int);       write(*,*) val_int
-  val_int = djb2_64(key_string);    write(*,*) val_int
-  val_int = djb2a_64(key_int);      write(*,*) val_int
-  val_int = sdbm_64(key_string);    write(*,*) val_int
-  val_int = fnv1_64(key_int);       write(*,*) val_int
-  val_int = fnv1a_64(key_string);   write(*,*) val_int
+  write(*,*) mmh3_64('hello')
+  write(*,*) mmh2_64(42)
+  write(*,*) djb2_64('world')
+  write(*,*) djb2a_64(21)
+  write(*,*) sdbm_64('foo')
+  write(*,*) fnv1_64(7)
+  write(*,*) fnv1a_64('bar')
 end program
 ````
 
@@ -39,20 +35,16 @@ The hash table derived types are available in a module file `hash_table_module`.
 ````Fortran
 program ht_test
   use hash_table_module ! uses hash_functions
-  integer      :: key_int, val_int, table_size, flag, i
+  integer      :: value, flag
   type(ht_int) :: table_int
 
-  key_int    = 42
-  val_int    = 2
-  table_size = 10
-
-  call table_int%init(table_size,flag,alg='mmh3 ',load_factor=0.85)  ! init
+  call table_int%init(10,flag,alg='mmh3 ',load_factor=0.85)          ! initialize, size 10
   table_int%remove => trem_simple_int                                ! redefine deletion method
-  call table_int%insert(key_int,val_int,flag)                        ! insert key/val
-  call table_int%set(key_int,key_int,flag)                           ! overwrite val
-  call table_int%resize(2*table_size,flag)                           ! resize table
-  call table_int%get(key_int,i,flag)                                 ! get val
-  call table_int%remove(key_int,flag)                                ! remove key/val
+  call table_int%insert(42,1003,flag)                                ! insert key/val (42, 1003)
+  call table_int%set(42,1,flag)                                      ! overwrite val
+  call table_int%resize(20,flag)                                     ! resize table to 20
+  call table_int%get(42,value,flag); write(*,*) value                ! get val
+  call table_int%remove(42,flag)                                     ! remove key/val
   call table_int%destruct(flag)                                      ! destroy table
 end program
 ````
