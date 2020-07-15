@@ -65,7 +65,7 @@ There are a number of open-source Fortran hash table implementations available. 
 
 I looked at a number of sources for making this project:
 
-- [rahulroy9202's legendary StackExchange answer](https://softwareengineering.stackexchange.com/questions/49550/which-hashing-algorithm-is-best-for-uniqueness-and-speed) started me down this path and influenced the hash algorithms I included.
+- [Ian Boyd's legendary StackExchange answer](https://softwareengineering.stackexchange.com/questions/49550/which-hashing-algorithm-is-best-for-uniqueness-and-speed) started me down this path and influenced the hash algorithms I included.
 - The [wikibooks page for Hash Tables](https://en.wikibooks.org/wiki/Data_Structures/Hash_Tables) was surprisingly useful in getting me started.
 - Jannis Teunissen's [`murmur3-fortran`](https://github.com/jannisteunissen/murmur3-fortran) and [`ffhash`](https://github.com/jannisteunissen/ffhash) were invaluable as references.
 - Reference links are included in the comment blocks of each hash function in the `hash_functions` module file.
