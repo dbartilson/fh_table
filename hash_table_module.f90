@@ -26,7 +26,7 @@ private :: tlookup_int,   tlookup_str, &
 !==========================================================
 type ht_int
    integer, dimension(:), allocatable :: key, val
-   integer :: dim, num, max_dist, max_num
+   integer :: dim=0, num=0, max_dist=1, max_num
    integer :: deleted   = Z'8000000'
    integer :: empty     = Z'7FFFFFF'
    real    :: max_load_factor = 0.7
@@ -54,7 +54,7 @@ end type
 type ht_str
    type(key_string), dimension(:), allocatable :: key
    integer,          dimension(:), allocatable :: val
-   integer      :: dim, num, max_dist, max_num
+   integer      :: dim=0, num=0, max_dist=1, max_num
    character(1) :: deleted = achar(2)
    character(1) :: empty   = achar(1)
    real         :: max_load_factor = 0.7
@@ -343,10 +343,11 @@ pure subroutine tlookup_int(ht,key,i,flag)
    class(ht_int), intent(in) :: ht
    integer,       intent(in) :: key
    integer,       intent(out):: i, flag
-   integer                   :: j
+   integer                   :: j, dim
 
    flag = -1
-   i = modulo(ht%fhash(key),ht%dim) + 1
+   dim = max(ht%dim,1)
+   i = modulo(ht%fhash(key),dim) + 1
 
    do j = 1,ht%max_dist
       if(ht%key(i) == key) then
@@ -355,7 +356,7 @@ pure subroutine tlookup_int(ht,key,i,flag)
       elseif(ht%key(i) == ht%empty) then
          return ! with flag = -1
       end if
-      i = modulo(i,ht%dim) + 1
+      i = modulo(i,dim) + 1
    end do
 end subroutine
 !==========================================================
@@ -366,10 +367,11 @@ pure subroutine tlookup_str(ht,key,i,flag)
    class(ht_str), intent(in) :: ht
    character(*),  intent(in) :: key
    integer,       intent(out):: i, flag
-   integer                   :: j
+   integer                   :: j, dim
 
    flag = -1
-   i = modulo(ht%fhash(key),ht%dim) + 1
+   dim = max(ht%dim,1)
+   i = modulo(ht%fhash(key),dim) + 1
 
    do j = 1,ht%max_dist
       if(ht%key(i)%string == key) then
@@ -378,7 +380,7 @@ pure subroutine tlookup_str(ht,key,i,flag)
       elseif(ht%key(i)%string(1:1) == ht%empty) then
          return ! with flag = -1
       end if
-      i = modulo(i,ht%dim) + 1
+      i = modulo(i,dim) + 1
    end do
 end subroutine
 !==========================================================
