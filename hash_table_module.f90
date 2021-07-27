@@ -8,7 +8,7 @@ module hash_table_module
 !   -4   : failed to insert item (table full)
 !   -3   : new dimension < number of old elements
 !   -1   : lookup failed for item (key not in table)
-!    0   : operation successfull
+!    0   : operation successful
 !    1   : failed to insert item (key already exists)
 
 
@@ -27,8 +27,8 @@ private :: tlookup_int,   tlookup_str, &
 type ht_int
    integer, dimension(:), allocatable :: key, val
    integer :: dim=0, num=0, max_dist=1, max_num
-   integer :: deleted   = Z'8000000'
-   integer :: empty     = Z'7FFFFFF'
+   integer :: deleted   = int(Z'8000000')
+   integer :: empty     = int(Z'7FFFFFF')
    real    :: max_load_factor = 0.7
 
    procedure(mmh2_64_int), nopass, pointer :: fhash  => mmh2_64_int
@@ -282,7 +282,7 @@ recursive subroutine tinsert_int(ht,key,val,flag)
             ht%key(i) = key
             ht%val(i) = val
             ht%num = ht%num + 1
-            if(dist > ht%max_dist) ht%max_dist = dist
+            ht%max_dist = max(ht%max_dist,dist)
             flag = 0
          else
             call ht%resize(2*ht%dim+1,flag)
@@ -319,7 +319,7 @@ recursive subroutine tinsert_str(ht,key,val,flag)
             ht%key(i)%string = key
             ht%val(i) = val
             ht%num = ht%num + 1
-            if(dist > ht%max_dist) ht%max_dist = dist
+            ht%max_dist = max(ht%max_dist,dist)
             flag = 0
          else
             call ht%resize(2*ht%dim+1,flag)
