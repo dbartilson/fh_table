@@ -11,8 +11,8 @@ module hash_table_module
 !    0   : operation successful
 !    1   : failed to insert item (key already exists)
 
-
 use hash_functions
+implicit none
 
 private :: tlookup_int,   tlookup_str, &
            tinit_int,     tinit_str, &

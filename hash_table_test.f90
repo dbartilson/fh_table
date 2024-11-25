@@ -1,6 +1,6 @@
 program hash_table_test
-
    use hash_table_module
+   implicit none
 
    !==========================================================
    integer, parameter :: slen = 10

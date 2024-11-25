@@ -1,16 +1,16 @@
 program hash_function_test
-
    ! This program performs speed tests and collision tests for the integer
    ! and string hash functions in hash_functions.f90 module
 
    !============================================================================
    use hash_functions
+   implicit none
 
    integer, parameter :: slen = 10 ! number of string bytes
    real           :: t1, t2, tsum
    character(6)   :: name
    character(slen):: str
-   integer        :: ierror, key
+   integer        :: ierror, key, value
    integer        :: i, j, ncol, k, strn(slen), base, a, b
    integer        :: tbl_size, nhash
 
@@ -22,6 +22,30 @@ program hash_function_test
    procedure(sdbm_64_str),    pointer :: fhash_s => null()
 
    !============================================================================
+   ! Hash function regression
+   !============================================================================
+
+   write(*,"('Hash functionality test')") 
+   
+   do k = 1,7
+      select case(k)
+      case(1); fhash_i => djb2_64_int;    name = 'djb2  '; value = 7579091932183233
+      case(2); fhash_i => djb2a_64_int;   name = 'djb2a '; value = 7564629544945605
+      case(3); fhash_i => sdbm_64_int;    name = 'sdbm  '; value = -6611300386825593088
+      case(4); fhash_i => fnv1_64_int;    name = 'fnv1  '; value = -5143479320121640220
+      case(5); fhash_i => fnv1a_64_int;   name = 'fnv1a '; value = 7278183591693927820
+      case(6); fhash_i => mmh2_64_int;    name = 'mmh2  '; value = -6233134304786354574
+      case(7); fhash_i => mmh3_64_int;    name = 'mmh3  '; value = 7410865052703103038
+      end select
+
+      key = fhash_i(2147483647)
+      if(key == value) then
+         write(*,"(a6,'  passed')") name
+      else 
+         write(*,"(a6,'  failed (key = ',i0,')')") name, key
+      end if
+   end do
+   !============================================================================
    ! Hash speed test: Integers
    !============================================================================
 
@@ -31,6 +55,7 @@ program hash_function_test
    allocate(keys(nhash),hash(nhash),STAT=ierror)
    if(ierror /= 0) write(*,"('Mem alloc error')")
 
+   write(*,"(/)")
    write(*,"('Hash speed test: ',i12,' integers')") nhash
 
    do k = 1,7

@@ -6,7 +6,7 @@ SRCS = hash_functions.f90 \
 OBJS = $(SRCS:.f90=.o)
 
 FC     = gfortran
-FFLAGS = -fimplicit-none -fdefault-integer-8 -fdefault-real-8 -O1
+FFLAGS = -cpp -fimplicit-none -fdefault-integer-8 -fdefault-real-8 -O1 -DNonstandard
 EXES   = hash_function_test hash_table_test
 
 default : $(EXES)
