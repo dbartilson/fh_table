@@ -1,7 +1,7 @@
 !==========================================================
 module hash_functions
 !==========================================================
-
+implicit none
 !==========================================================
 ! Private variables and procedures
 !==========================================================
@@ -13,7 +13,7 @@ integer, private, parameter :: mmh_seed = 7006975885128933000, &
                                ! fnv1 64-bit (uint8) offset -> decimal -> int8
 
 private :: mmh3_64_block, mmh3_64_final, rotl_64, fmix_64, &
-           mmh2_64_block, mmh2_64_final
+           mmh2_64_block, mmh2_64_final, mult_64, add_64
 
 !==========================================================
 
@@ -47,6 +47,62 @@ end interface
 
 !==========================================================
 contains
+!==========================================================
+
+!==========================================================
+pure function mult_64(x, y) result(z)
+!==========================================================
+   integer, intent(in) :: x, y
+   integer :: z
+
+#ifdef Nonstandard
+   z = x * y
+#else
+   ! perform multiplication of 64 bit signed integers by
+   ! splitting into 3 32 bit multiplies. This is intended
+   ! to be Fortran standard compliant to deal with overflow
+   integer :: xl, xh, yl, yh
+   !x, y: 64-bit integer
+   !x_h/x_l: higher/lower 32 bits of x
+   !y_h/y_l: higher/lower 32 bits of y
+!
+   !x*y  = ((x_h*2^32 + x_l)*(y_h*2^32 + y_l)) mod 2^64
+   !   = (x_h*y_h*2^64 + x_l*y_l + x_h*y_l*2^32 + x_l*y_h*2^32) mod 2^64
+   !   = x_l*y_l + (x_h*y_l + x_l*y_h)*2^32
+   xh = ibits(x, 32, 32)
+   xl = ibits(x, 0, 32)
+   yh = ibits(y, 32, 32)
+   yl = ibits(y, 0, 32)
+
+   z = xh * yl + xl * yh
+   z = shiftl(z, 32)
+   z = z + (xl * yl)
+#endif
+
+end function mult_64
+!==========================================================
+
+!==========================================================
+pure function add_64(x, y) result(z)
+!==========================================================
+   ! perform addition of 64 bit signed integers. This is intended
+   ! to be Fortran standard compliant to deal with overflow
+   integer, intent(in) :: x, y
+   integer :: z
+
+#ifdef Nonstandard
+   z = x + y
+#else
+   integer :: xl, xh, yl, yh
+   xh = ibits(x, 32, 32)
+   xl = ibits(x, 0, 32)
+   yh = ibits(y, 32, 32)
+   yl = ibits(y, 0, 32)
+
+   z = shiftl(xh + yh, 32) + xl + yl
+#endif
+
+end function add_64
 !==========================================================
 
 !==========================================================
@@ -109,9 +165,9 @@ pure function mmh3_64_str(key) result(hash)
             ki8 = transfer(key(nblocks*16+i:nblocks*16+i),ki)
             k2 = ieor(k2,shiftl(ki8,shifts(i)))
          end do
-         k2 = k2 * c2
+         k2 = mult_64(k2, c2) ! k2 * c2
          k2 = rotl_64(k2,33)
-         k2 = k2 * c1
+         k2 = mult_64(k2, c1) ! k2 * c1
          h2 = ieor(h2,k2)
          tlen = 8
       end if
@@ -120,9 +176,9 @@ pure function mmh3_64_str(key) result(hash)
          ki8 = transfer(key(nblocks*16+i:nblocks*16+i),ki)
          k1 = ieor(k1,shiftl(ki8,shifts(i)))
       end do
-      k1 = k1 * c1
+      k1 = mult_64(k1, c1) ! k1 * c1
       k1 = rotl_64(k1,31)
-      k1 = k1 * c2
+      k1 = mult_64(k1, c2) ! k1 * c2
       h1 = ieor(h1,k1)
    end if
 
@@ -140,23 +196,23 @@ pure subroutine mmh3_64_block(k1,k2,h1,h2)
    integer, parameter    :: c1 = -8663945395140668459, &
                             c2 = -3677843016744856600
 
-   k1 = k1 * c1
+   k1 = mult_64(k1, c1) ! k1 * c1
    k1 = rotl_64(k1,31)
-   k1 = k1 * c2
+   k1 = mult_64(k1, c2) ! k1 * c2
 
    h1 = ieor(h1,k1)
    h1 = rotl_64(h1,27)
-   h1 = h1 + h2
-   h1 = 5*h1 + 1390208809
+   h1 = add_64(h1, h2) ! h1 + h2
+   h1 = add_64(mult_64(5, h1), 1390208809) ! 5*h1 + 1390208809
 
-   k2 = k2 * c2
+   k2 = mult_64(k2, c2) ! k2 * c2
    k2 = rotl_64(k2,33)
-   k2 = k2 * c1
+   k2 = mult_64(k2, c1) ! k2 * c1
 
    h2 = ieor(h2,k2)
    h2 = rotl_64(h2,31)
-   h2 = h2 + h1
-   h2 = 5*h2 + 944331445
+   h2 = add_64(h2, h1) ! h2 + h1
+   h2 = add_64(mult_64(5, h2), 944331445) ! 5*h2 + 944331445
 
 end subroutine
 !==========================================================
@@ -171,7 +227,7 @@ pure function mmh3_64_final(h1,h2) result(hash)
    hi1 = ieor(h1,16)
    hi2 = ieor(h2,16)
 
-   hi1 = hi1 + hi2
+   hi1 = add_64(hi1, hi2) ! hi1 + hi2
    ! h2 = h2 + h1
 
    hi1 = fmix_64(hi1)
@@ -194,9 +250,9 @@ pure integer function fmix_64(x)
 !==========================================================
    integer, intent(in) :: x
    fmix_64 = ieor(x,shiftr(x,33))
-   fmix_64 = fmix_64 * (-49064778989727740)
+   fmix_64 = mult_64(fmix_64, -49064778989727740) ! fmix_64 * (-49064778989727740)
    fmix_64 = ieor(x,shiftr(x,33))
-   fmix_64 = fmix_64 * (-4265267296055464877)
+   fmix_64 = mult_64(fmix_64, -4265267296055464877) ! fmix_64 * (-4265267296055464877)
    fmix_64 = ieor(fmix_64,shiftr(fmix_64,33))
 end function
 !==========================================================
@@ -252,7 +308,7 @@ pure function mmh2_64_str(key) result(hash)
          k = transfer(key(nblocks*8+i:nblocks*8+i),ki)
          h = ieor(h,shiftl(k,shifts(i)))
       end do
-      h = h*m
+      h = mult_64(h, m) ! h*m
    end if
 
    hash = mmh2_64_final(h)
@@ -268,11 +324,11 @@ pure subroutine mmh2_64_block(k,h)
    integer, parameter     :: m = -4132994306676758500, &
                              r = 47
 
-   k = k * m
+   k = mult_64(k, m) ! k * m
    k = ieor(k,shiftr(k,r))
-   k = k * m
+   k = mult_64(k, m) ! k * m
    h = ieor(h,k)
-   h = h * m
+   h = mult_64(h, m) ! h * m
 
 end subroutine
 !==========================================================
@@ -287,7 +343,7 @@ pure function mmh2_64_final(h) result(hi)
                           r = 47
 
    hi = ieor(h,shiftr(h,r))
-   hi = hi * m
+   hi = mult_64(hi, m) ! hi * m
    hi = ieor(hi,shiftr(hi,r))
 
 end function
@@ -304,7 +360,7 @@ pure function djb2_64_int(key) result(hash)
    hash = djb2_init
    do i = 1,8
       ki = ibits(key,8*(i-1),8)
-      hash = (hash * 33) + ki
+      hash = add_64(mult_64(hash, 33), ki) ! (hash * 33) + ki
    end do
 
 end function
@@ -324,7 +380,7 @@ pure function djb2_64_str(key) result(hash)
    hash = djb2_init
    do i = 1,klen
       ki = transfer(key(i:i),split)
-      hash = (hash * 33) + ki
+      hash = add_64(mult_64(hash, 33), ki) ! (hash * 33) + ki
    end do
 
 end function
@@ -341,7 +397,7 @@ pure function djb2a_64_int(key) result(hash)
    hash = djb2_init
    do i = 1,8
       ki = ibits(key,8*(i-1),8)
-      hash = ieor(33*hash,ki)
+      hash = ieor(mult_64(33, hash),ki)
    end do
 
 end function
@@ -361,7 +417,7 @@ pure function djb2a_64_str(key) result(hash)
    hash = djb2_init
    do i = 1,klen
       ki = transfer(key(i:i),split)
-      hash = ieor(33*hash,ki)
+      hash = ieor(mult_64(33, hash),ki)
    end do
 
 end function
@@ -377,7 +433,7 @@ pure function sdbm_64_int(key) result(hash)
    hash = 0
    do i = 1,8
       ki = ibits(key,8*(i-1),8)
-      hash = hash * 65599 + ki
+      hash = add_64(mult_64(hash, 65599), ki) ! hash * 65599 + ki
    end do
 
 end function
@@ -396,7 +452,7 @@ pure function sdbm_64_str(key) result(hash)
    hash = 0
    do i = 1,klen
       ki = transfer(key(i:i),split)
-      hash = hash * 65599 + ki
+      hash = add_64(mult_64(hash, 65599), ki) ! hash * 65599 + ki
    end do
 
 end function
@@ -412,7 +468,7 @@ pure function fnv1_64_int(key) result(hash)
 
    hash = fnv_offset
    do i = 1,8
-      hash = hash * fnv_prime
+      hash = mult_64(hash, fnv_prime) ! hash * fnv_prime
       ki = ibits(key,8*(i-1),8)
       hash = ieor(hash,ki)
    end do
@@ -433,7 +489,7 @@ pure function fnv1_64_str(key) result(hash)
 
    hash = fnv_offset
    do i = 1,klen
-      hash = hash * fnv_prime
+      hash = mult_64(hash, fnv_prime) ! hash * fnv_prime
       ki = transfer(key(i:i),split)
       hash = ieor(hash,ki)
    end do
@@ -453,7 +509,7 @@ pure function fnv1a_64_int(key) result(hash)
    do i = 1,8
       ki = ibits(key,8*(i-1),8)
       hash = ieor(hash,ki)
-      hash = hash * fnv_prime
+      hash = mult_64(hash, fnv_prime) ! hash * fnv_prime
    end do
 
 end function
@@ -474,7 +530,7 @@ pure function fnv1a_64_str(key) result(hash)
    do i = 1,klen
       ki = transfer(key(i:i),split)
       hash = ieor(hash,ki)
-      hash = hash * fnv_prime
+      hash = mult_64(hash, fnv_prime) ! hash * fnv_prime
    end do
 
 end function
