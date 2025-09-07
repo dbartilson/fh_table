@@ -6,14 +6,20 @@ implicit none
 ! Private variables and procedures
 !==========================================================
 
-integer, private, parameter :: mmh_seed = 7006975885128933000, &
-                               djb2_init = 5381, &
-                               fnv_offset = -3750763034362896400, &
-                               fnv_prime = 1099511628211
-                               ! fnv1 64-bit (uint8) offset -> decimal -> int8
+private
+public :: mmh3_64, mmh3_64_int, mmh3_64_str, &
+          mmh2_64, mmh2_64_int, mmh2_64_str, &
+          djb2_64, djb2_64_int, djb2_64_str, &
+          djb2a_64, djb2a_64_int, djb2a_64_str, &
+          sdbm_64, sdbm_64_int, sdbm_64_str, &
+          fnv1_64, fnv1_64_int, fnv1_64_str, &
+          fnv1a_64, fnv1a_64_int, fnv1a_64_str
 
-private :: mmh3_64_block, mmh3_64_final, rotl_64, fmix_64, &
-           mmh2_64_block, mmh2_64_final, mult_64, add_64
+integer, parameter :: mmh_seed = 7006975885128933000, &
+                      djb2_init = 5381, &
+                      fnv_offset = -3750763034362896400, &
+                      fnv_prime = 1099511628211
+                      ! fnv1 64-bit (uint8) offset -> decimal -> int8
 
 !==========================================================
 
