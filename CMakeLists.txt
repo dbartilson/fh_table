@@ -8,11 +8,11 @@ project(
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 option(BUILD_TESTS "Build test executables" ON)
 
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DNonstandard -warn")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DNonstandard")
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fpp -real-size:64 -integer-size:64")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fpp -real-size:64 -integer-size:64 -warn")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp -fdefault-integer-8 -fdefault-real-8")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp -fdefault-integer-8 -fdefault-real-8 -Wall")
 endif()
 
 add_library(fh_table hash_functions.f90 hash_table_module.f90)
