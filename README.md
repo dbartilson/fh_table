@@ -12,6 +12,17 @@ The main features of `fh_table` are:
 
 **Author:** Daniel T. Bartilson
 
+## Build
+
+Use CMake, as follows:
+```bash
+cmake -B build --fresh -DCMAKE_BUILD_TYPE=Release
+cmake --build build --clean-first
+cmake --install build --prefix install
+```
+
+For Windows builds with the Intel LLVM compilerse (oneMKL), use `-G Ninja` with CMake.
+
 ## Usage
 
 The hash functions are available in a module file `hash_functions`, which may be used as below. An example of usage and speed testing the various hash algorithms is done in `hash_function_test`, compilable with the `makefile`.

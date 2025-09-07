@@ -14,14 +14,10 @@ module hash_table_module
 use hash_functions
 implicit none
 
-private :: tlookup_int,   tlookup_str, &
-           tinit_int,     tinit_str, &
-           tdestruct_int, tdestruct_str, &
-           tresize_int,   tresize_str, &
-           tinsert_int,   tinsert_str, &
-           tset_int,      tset_str, &
-           tget_int,      tget_str, &
-           key_string
+private
+public :: ht_int, ht_str, &
+          trem_simple_int, trem_simple_str, &
+          trem_shift_int, trem_shift_str
 
 !==========================================================
 type ht_int
