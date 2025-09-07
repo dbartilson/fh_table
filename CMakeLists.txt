@@ -8,9 +8,10 @@ project(
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 option(BUILD_TESTS "Build test executables" ON)
 
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -DNonstandard")
+# If possible, use the -DNonstandard flag, as long as the tests pass. It will be significantly faster, but 
+# depends on non-Fortran-standard-compliant behavior for integer overflow
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fpp -real-size:64 -integer-size:64 -warn")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fpp -real-size:64 -integer-size:64 -warn -DNonstandard")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp -fdefault-integer-8 -fdefault-real-8 -Wall")
 endif()

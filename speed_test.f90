@@ -25,6 +25,8 @@ program speed_test
    type(ht_int) :: htable_int
    type(ht_str) :: htable_str
 
+   lf = 0.70 ! Load factor
+
    !============================================================================
    ! Hash speed test: Integers
    !============================================================================
