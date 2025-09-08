@@ -11,9 +11,9 @@ option(BUILD_TESTS "Build test executables" ON)
 # If possible, use the -DNonstandard flag, as long as the tests pass. It will be significantly faster, but 
 # depends on non-Fortran-standard-compliant behavior for integer overflow
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fpp -real-size:64 -integer-size:64 -warn -DNonstandard")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fpp -real-size:64 -integer-size:64 -warn -DNonstandard -fno-strict-overflow")
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp -fdefault-integer-8 -fdefault-real-8 -Wall")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp -fdefault-integer-8 -fdefault-real-8 -Wall -DNonstandard -fwrapv")
 endif()
 
 add_library(fh_table hash_functions.f90 hash_table_module.f90)
