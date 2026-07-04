@@ -21,11 +21,11 @@ cmake --build build --clean-first
 cmake --install build --prefix install
 ```
 
-For Windows builds with the Intel LLVM compilerse (oneMKL), use `-G Ninja` with CMake.
+For Windows builds with the Intel LLVM compilers (oneMKL), use `-G Ninja` with CMake.
 
 ## Usage
 
-The hash functions are available in a module file `hash_functions`, which may be used as below. An example of usage and speed testing the various hash algorithms is done in `hash_function_test`, compilable with the `makefile`.
+The hash functions are available in a module file `hash_functions`, which may be used as below. An example of usage and speed testing the various hash algorithms is done in `hash_function_test` which is automatically compiled in the CMake build.
 
 ````Fortran
 program hash_test
@@ -41,7 +41,7 @@ program hash_test
 end program
 ````
 
-The hash table derived types are available in a module file `hash_table_module`. An example showing all of the available options and methods for an integer-keyed table are shown below. String-keyed tables operate similarly. An example of usage and operability is shown in `hash_table_test`, compilable with the `makefile`.
+The hash table derived types are available in a module file `hash_table_module`. An example showing all of the available options and methods for an integer-keyed table are shown below. String-keyed tables operate similarly. An example of usage and operability is shown in `hash_table_test` which is automatically compiled in the CMake build.
 
 ````Fortran
 program ht_test
@@ -62,7 +62,7 @@ end program
 
 ## Notes 
 
-- `fh_table` requires a Fortran 2008 compiler and has been tested with gfortran 8.1.0. `implicit none` and default 8-byte real/integers are assumed to be baked in during compilation. 
+- `fh_table` requires a Fortran 2008 compiler and has been tested with gfortran 8.1.0-16.1.1. `implicit none` and default 8-byte real/integers are assumed to be baked in during compilation. 
 - Storing string keys is slower than storing integer keys because (1) the hash functions are faster for integers (see the `hash_function_test` exe) and (2) integer keys are stored in an aligned fashion and require no reallocations, while storing variable-length strings will typically result in misalignment and will default to reallocation on assignment.
 - While hash tables and hash functions are available for integer and variable-length string key types, the included hash tables only use integers for the value of the key/value pair. This was done for simplicity. If you need to reference a string (or other type) value, I recommend storing that in a separate array and using the 'value' of the hash table to store the corresponding index.
 

@@ -9,7 +9,7 @@ program functionality_test
    implicit none
 
    integer, parameter :: slen = 10 ! number of string bytes
-   character(6)   :: name
+   character(5)   :: name
    character(slen):: str
    integer        :: ierror, key, value, flag, ret = 0
    integer        :: i, j, k, strn(slen), base, a, b, val, n
@@ -32,13 +32,13 @@ program functionality_test
    
    do k = 1,7
       select case(k)
-      case(1); fhash_i => djb2_64_int;    name = 'djb2  '; value = 7579091932183233
-      case(2); fhash_i => djb2a_64_int;   name = 'djb2a '; value = 7564629544945605
-      case(3); fhash_i => sdbm_64_int;    name = 'sdbm  '; value = -6611300386825593088
-      case(4); fhash_i => fnv1_64_int;    name = 'fnv1  '; value = -5143479320121640220
-      case(5); fhash_i => fnv1a_64_int;   name = 'fnv1a '; value = 7278183591693927820
-      case(6); fhash_i => mmh2_64_int;    name = 'mmh2  '; value = -6233134304786354574
-      case(7); fhash_i => mmh3_64_int;    name = 'mmh3  '; value = 7410865052703103038
+      case(1); fhash_i => djb2_64_int;    name = 'djb2 '; value = 7579091932183233
+      case(2); fhash_i => djb2a_64_int;   name = 'djb2a'; value = 7564629544945605
+      case(3); fhash_i => sdbm_64_int;    name = 'sdbm '; value = -6611300386825593088
+      case(4); fhash_i => fnv1_64_int;    name = 'fnv1 '; value = -5143479320121640220
+      case(5); fhash_i => fnv1a_64_int;   name = 'fnv1a'; value = 7278183591693927820
+      case(6); fhash_i => mmh2_64_int;    name = 'mmh2 '; value = -6233134304786354574
+      case(7); fhash_i => mmh3_64_int;    name = 'mmh3 '; value = 7410865052703103038
       end select
 
       key = fhash_i(2147483647)
@@ -69,13 +69,13 @@ program functionality_test
 
    do k = 1,7
       select case(k)
-      case(1); name = 'djb2  '
-      case(2); name = 'djb2a '
-      case(3); name = 'sdbm  '
-      case(4); name = 'fnv1  '
-      case(5); name = 'fnv1a '
-      case(6); name = 'mmh2  '
-      case(7); name = 'mmh3  '
+      case(1); name = 'djb2 '
+      case(2); name = 'djb2a'
+      case(3); name = 'sdbm '
+      case(4); name = 'fnv1 '
+      case(5); name = 'fnv1a'
+      case(6); name = 'mmh2 '
+      case(7); name = 'mmh3 '
       end select
 
       write(*,*) "Testing algorithm: ",name
@@ -181,13 +181,13 @@ program functionality_test
 
    do k = 1,7
       select case(k)
-      case(1); name = 'djb2  '
-      case(2); name = 'djb2a '
-      case(3); name = 'sdbm  '
-      case(4); name = 'fnv1  '
-      case(5); name = 'fnv1a '
-      case(6); name = 'mmh2  '
-      case(7); name = 'mmh3  '
+      case(1); name = 'djb2 '
+      case(2); name = 'djb2a'
+      case(3); name = 'sdbm '
+      case(4); name = 'fnv1 '
+      case(5); name = 'fnv1a'
+      case(6); name = 'mmh2 '
+      case(7); name = 'mmh3 '
       end select
 
       write(*,*) "Testing algorithm: ",name
