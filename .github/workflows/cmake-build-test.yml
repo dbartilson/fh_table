@@ -31,11 +31,6 @@ jobs:
       with:
         compiler: gcc
         version: latest
-      
-    - name: Setup Fortran executable
-      if: ${{ matrix.os == 'windows-latest' }}
-      run: |
-        echo "FC=$env:FCDIR/$env:FC" >> $GITHUB_ENV
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
@@ -50,6 +45,7 @@ jobs:
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -G "Ninja" -DCMAKE_Fortran_COMPILER=gfortran
         -S ${{ github.workspace }}
 
     - name: Build
