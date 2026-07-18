@@ -2,9 +2,9 @@ name: CMake on multiple platforms
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches: [ master ]
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ master ]
     types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -25,6 +25,13 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 
+    - name: Setup Fortran on Windows
+      if: ${{ matrix.os == 'windows-latest' }}
+      uses: fortran-lang/setup-fortran@v1
+      with:
+        compiler: gcc
+        version: latest
+
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       id: strings
@@ -37,8 +44,8 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_Fortran_COMPILER=gfortran
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -G "Ninja" -DCMAKE_Fortran_COMPILER=gfortran
         -S ${{ github.workspace }}
 
     - name: Build
@@ -49,4 +56,4 @@ jobs:
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest --build-config ${{ matrix.build_type }} -V
+      run: ctest --build-config ${{ matrix.build_type }} --test-dir ${{ steps.strings.outputs.build-output-dir }}/test -V

@@ -257,8 +257,8 @@ program functionality_test
 
    !==========================================================
 
-   if (ret /= 0) stop ret
    write(*,"(//,'Done...')")
+   stop ret
    !read(*,"(a)") str
 
 end program
