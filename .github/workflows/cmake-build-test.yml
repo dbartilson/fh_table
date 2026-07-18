@@ -45,7 +45,6 @@ jobs:
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DNON_STANDARD_WRAP=OFF
         -G "Ninja" -DCMAKE_Fortran_COMPILER=gfortran
         -S ${{ github.workspace }}
 
