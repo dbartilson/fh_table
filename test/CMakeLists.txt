@@ -13,6 +13,6 @@ set_tests_properties(fh_speed_test PROPERTIES DISABLED TRUE)
 if(WIN32)
   get_filename_component(COMPILER_DIR ${CMAKE_Fortran_COMPILER} DIRECTORY)
   set_tests_properties(fh_functionality_test fh_speed_test PROPERTIES
-      ENVIRONMENT_MODIFICATION "PATH=path_list_append:${COMPILER_DIR}"
+      ENVIRONMENT_MODIFICATION "PATH=path_list_append:$<TARGET_FILE_DIR:fh_table>"
   )
 endif()
