@@ -27,7 +27,7 @@ jobs:
 
     
     - name: Setup Fortran on Windows
-      if: ${{ matrix.build_type }} == "windows-latest"
+      if: "${{ matrix.build_type }}" == "windows-latest"
       uses: fortran-lang/setup-fortran@v1
       with:
         compiler: gfortran
