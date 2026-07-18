@@ -23,6 +23,14 @@ cmake --install build --prefix install
 
 For Windows builds with the Intel LLVM compilers (oneMKL), use `-G Ninja` with CMake.
 
+## Testing
+
+Automated tests can be run with CTest:
+```bash
+ctest --test-dir build/test -C Release
+```
+This only runs the functionality test by default. To run the speed test, enable it in the CMake file and run, preferably with the CTest `-V` flag to see output.
+
 ## Usage
 
 The hash functions are available in a module file `hash_functions`, which may be used as below. An example of usage and speed testing the various hash algorithms is done in `hash_function_test` which is automatically compiled in the CMake build.
