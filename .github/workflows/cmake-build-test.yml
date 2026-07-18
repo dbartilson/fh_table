@@ -26,10 +26,10 @@ jobs:
     - uses: actions/checkout@v7
 
     - name: Setup Fortran on Windows
-      if: ${{ matrix.build_type }} == windows-latest
+      if: ${{ matrix.build_type == 'windows-latest' }}
       uses: fortran-lang/setup-fortran@v1
       with:
-        compiler: gfortran
+        compiler: gcc
         version: latest
 
     - name: Set reusable strings
